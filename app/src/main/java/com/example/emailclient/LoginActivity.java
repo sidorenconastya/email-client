@@ -10,34 +10,38 @@ import android.widget.EditText;
 
 public class LoginActivity extends Activity {
 
-    private EditText email_text;
-    private EditText password_text;
-    private Button login_button;
-    public String email;
-    public String password;
+    public EditText email_text;
+    public EditText password_text;
+    public Button login_button;
+    public String emailIntent;
+    public String passwordIntent;
 
-    public String getEmail(){
+    /*public String getEmail(){
         return this.email;
     }
 
     public String getPassword(){
         return this.password;
-    }
+    }*/
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        password_text = findViewById(R.id.passwordText);
-        email_text = findViewById(R.id.emailText);
-        email = email_text.getText().toString();
-        password = password_text.getText().toString();
+        password_text = (EditText) findViewById(R.id.passwordText);
+        email_text = (EditText) findViewById(R.id.emailText);
+
+       // System.out.println("EmailLogin"+emailIntent);
         login_button = findViewById(R.id.loginButton);
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                emailIntent = email_text.getText().toString();
+                passwordIntent = password_text.getText().toString();
                 Intent intent = new Intent(LoginActivity.this, MailActivity.class);
+                intent.putExtra("email", emailIntent);
+                intent.putExtra("password", passwordIntent);
                 startActivity(intent);
             }
         });

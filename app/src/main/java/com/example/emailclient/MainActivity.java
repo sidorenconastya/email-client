@@ -20,7 +20,7 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
             }
-        }, 300);
+        }, 500);
     }
     @Override
     protected void onResume(){

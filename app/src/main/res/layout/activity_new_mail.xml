@@ -4,39 +4,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity">
+    tools:context=".NewMailActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <EditText
-            android:id="@+id/emailText"
+            android:id="@+id/recipientText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter your e-mail"
+            android:hint="To: "
             android:inputType="textEmailAddress" />
-        <!--android:text="Name" />-->
 
         <EditText
-            android:id="@+id/passwordText"
+            android:id="@+id/subjectText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Enter your pasword"
-            android:inputType="textPassword" />
+            android:hint="Subject: "
+            android:inputType="textPersonName" />
 
-        <Button
-            android:id="@+id/loginButton"
+        <EditText
+            android:id="@+id/messageText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sign In" />
+            android:ems="10"
+            android:hint="Your message: "
+            android:inputType="textMultiLine"
+            android:lines="5"/>
 
+        <Button
+            android:id="@+id/sendButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Send" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

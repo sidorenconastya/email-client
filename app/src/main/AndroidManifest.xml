@@ -21,7 +21,9 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".SplashActivity" />
         <activity android:name=".MailActivity" />
-        <activity android:name=".NewMailActivity"></activity>
+        <activity android:name=".NewMailActivity" />
+        <activity android:name=".MesageActivity" />
+        <activity android:name=".MessageActivity"></activity>
     </application>
 
 </manifest>

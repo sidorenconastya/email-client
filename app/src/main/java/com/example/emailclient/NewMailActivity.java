@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import java.util.Properties;
 
@@ -25,6 +26,8 @@ public class NewMailActivity extends AppCompatActivity {
     public EditText messageText;
     public EditText recipientText;
     public EditText subjectText;
+    public String email;
+    public String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +40,8 @@ public class NewMailActivity extends AppCompatActivity {
         subjectText = (EditText) findViewById(R.id.subjectText);
 
         Intent intent = getIntent();
-        final String email = getIntent().getExtras().getString("email");
-        final String password = intent.getStringExtra("password");
+        email = getIntent().getExtras().getString("email");
+        password = intent.getStringExtra("password");
 
 
 
@@ -100,6 +103,20 @@ public class NewMailActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            recipientText.setText("");
+            messageText.setText("");
+            subjectText.setText("");
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Email was sent successfully!", Toast.LENGTH_SHORT);
+            toast.show();
+            Intent intent = new Intent(NewMailActivity.this, MailActivity.class);
+            intent.putExtra("email", email);
+            intent.putExtra("password", password);
+            startActivity(intent);
         }
     }
 }

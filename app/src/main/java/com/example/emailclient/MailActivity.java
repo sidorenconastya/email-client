@@ -132,12 +132,23 @@ public class MailActivity extends Activity {
             return null;
         }
         @Override
-        protected void onPostExecute(ArrayList<EmailMessage> message){
+        protected void onPostExecute(final ArrayList<EmailMessage> message){
             int viewCount = message.size();
             TextView[] textViews = new TextView[viewCount];
             Context context = getApplicationContext();
             for (int i = 0; i < viewCount; i++){
                 TextView tmp = new TextView(context);
+                final int finalI = i;
+                tmp.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                            Intent intent = new Intent(MailActivity.this, MessageActivity.class);
+                            intent.putExtra("sender", message.get(finalI).getSender());
+                            intent.putExtra("subject", message.get(finalI).getSubject());
+                            intent.putExtra("body", message.get(finalI).getBody());
+                            startActivity(intent);
+                    }
+                });
                 tmp.setText(message.get(i).printEmail());
                 emailLayout.addView(tmp);
                 textViews[i] = tmp;

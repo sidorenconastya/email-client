@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.sun.mail.imap.IMAPFolder;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,9 +40,6 @@ public class MailActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mail);
 
-//        subjectText = (TextView) findViewById(R.id.subjectText);
-//        fromText = (TextView) findViewById(R.id.fromText);
-//        bodyText = (TextView) findViewById(R.id.bodyText);
         emailLayout = (LinearLayout) findViewById(R.id.emailLayout);
         newEmailButton = (Button) findViewById(R.id.newEmailButton);
 
@@ -49,9 +48,10 @@ public class MailActivity extends Activity {
         Intent intent = getIntent();
         final String email = getIntent().getExtras().getString("email");
         final String password = intent.getStringExtra("password");
+        final String mail = intent.getStringExtra("mail");
 
         AsyncRequest asyncRequest = new AsyncRequest();
-        asyncRequest.execute(email, password);
+        asyncRequest.execute(email, password, mail);
 
         newEmailButton.setOnClickListener(new View.OnClickListener(){
 
@@ -60,25 +60,22 @@ public class MailActivity extends Activity {
                 Intent intent = new Intent(MailActivity.this, NewMailActivity.class);
                 intent.putExtra("email", email);
                 intent.putExtra("password", password);
+                intent.putExtra("mail", mail);
                 startActivity(intent);
             }
         });
 
     }
 
-    public ArrayList<EmailMessage> receiveEmail(final String email, final String password) throws MessagingException, IOException {
+    public ArrayList<EmailMessage> receiveEmailPop(final String email, final String password) throws MessagingException, IOException {
 
         Properties properties = new Properties();
-        properties.put("mail.store.protocol", "pop3s");
-        //properties.put("mail.pop3.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        //properties.put("mail.pop3.socketFactory.port", "995");
-       // properties.put("mail.pop3.auth", "true");
-        properties.put("mail.pop3s.host", "pop.mail.ru");
-        properties.put("mail.pop3s.user", email);
-        properties.put("mail.pop3s.ssl.enable", "true");
-        properties.put("mail.pop3s.ssl.trust", "pop.mail.ru");
-        properties.put("mail.pop3s.port", "995");
-
+            properties.put("mail.store.protocol", "pop3s");
+            properties.put("mail.pop3s.host", "pop.mail.ru");
+            properties.put("mail.pop3s.user", email);
+            properties.put("mail.pop3s.ssl.enable", "true");
+            properties.put("mail.pop3s.ssl.trust", "pop.mail.ru");
+            properties.put("mail.pop3s.port", "995");
 
         Session session = Session.getInstance(properties,
                 new Authenticator() {
@@ -98,31 +95,64 @@ public class MailActivity extends Activity {
 
         int messagesCount = inbox.getMessageCount();
 
-        //Map<String, String> messageMap;
-        //ArrayList<Map<String, String>> result = new ArrayList<>();
+        ArrayList<EmailMessage> result = new ArrayList<>();
+
+        for (int i = 0; i < messagesCount; i++){
+            Message message = messages[i];
+            result.add(new EmailMessage((message.getFrom()[0]).toString(), message.getSubject(), (message.getContent()).toString(), (message.getSentDate())));
+        }
+
+        return result;
+    }
+
+    public ArrayList<EmailMessage> receiveEmailImap(final String email, final String password) throws MessagingException, IOException {
+
+        Properties properties = new Properties();
+        properties.put("mail.store.protocol", "imaps");
+        properties.put("mail.imaps.host", "imap.gmail.com");
+        properties.put("mail.imaps.user", email);
+        properties.put("mail.imaps.ssl.enable", "true");
+        properties.put("mail.imaps.ssl.trust", "imap.gmail.com");
+        properties.put("mail.imaps.port", "993");
+
+        Session session = Session.getInstance(properties,
+                new Authenticator() {
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(email, password);
+                    }
+                });
+        session.setDebug(true);
+        Store store = session.getStore("imaps");
+        store.connect("imap.gmail.com", email, password);
+
+        IMAPFolder inbox = (IMAPFolder) store.getFolder("INBOX");
+        inbox.open(Folder.READ_ONLY);
+
+        Message[] messages;
+        messages = inbox.getMessages();
+
+        int messagesCount = inbox.getMessageCount();
 
         ArrayList<EmailMessage> result = new ArrayList<>();
 
         for (int i = 0; i < messagesCount; i++){
             Message message = messages[i];
-            result.add(new EmailMessage((message.getFrom()[0]).toString(), message.getSubject(), (message.getContent()).toString()));
+            result.add(new EmailMessage((message.getFrom()[0]).toString(), message.getSubject(), (message.getContent()).toString(), message.getSentDate()));
         }
-//        for (int i = 0; i < messagesCount; i++){
-//            subjects[i] = (messages.get(i).getSubject());
-//            froms[i] = ((messages.get(i).getFrom()[0]).toString());
-//            contents[i] = ((messages.get(i).getContent()).toString());
-//        }
 
         return result;
-        //return messages[0];
     }
 
     public class AsyncRequest extends AsyncTask<String, Void, ArrayList<EmailMessage>>{
         @Override
         protected ArrayList<EmailMessage> doInBackground(String... params) {
-            ArrayList<EmailMessage> message;
+            ArrayList<EmailMessage> message = new ArrayList<>();
             try {
-                message = receiveEmail(params[0], params[1]);
+                if (params[2].equals("mail")){
+                    message = receiveEmailPop(params[0], params[1]);}
+                else if (params[2].equals("gmail")){
+                    message = receiveEmailImap(params[0], params[1]);
+                }
                 return message;
             } catch (MessagingException e) {
                 e.printStackTrace();
@@ -146,6 +176,7 @@ public class MailActivity extends Activity {
                             intent.putExtra("sender", message.get(finalI).getSender());
                             intent.putExtra("subject", message.get(finalI).getSubject());
                             intent.putExtra("body", message.get(finalI).getBody());
+                            intent.putExtra("date", message.get(finalI).getDate());
                             startActivity(intent);
                     }
                 });
@@ -154,12 +185,6 @@ public class MailActivity extends Activity {
                 textViews[i] = tmp;
             }
 
-
-
-
-//            subjectText.setText(message.get(0));
-//            fromText.setText((message.get(1)));
-//            bodyText.setText((message.get(2)));
         }
 
     }

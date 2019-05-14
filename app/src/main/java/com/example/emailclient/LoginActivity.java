@@ -15,6 +15,7 @@ public class LoginActivity extends Activity {
     public Button login_button;
     public String emailIntent;
     public String passwordIntent;
+    public Button gmailButton;
 
     /*public String getEmail(){
         return this.email;
@@ -42,8 +43,24 @@ public class LoginActivity extends Activity {
                 Intent intent = new Intent(LoginActivity.this, MailActivity.class);
                 intent.putExtra("email", emailIntent);
                 intent.putExtra("password", passwordIntent);
+                intent.putExtra("mail", "mail");
                 startActivity(intent);
             }
         });
+        gmailButton = findViewById(R.id.gmailButton);
+        gmailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                emailIntent = email_text.getText().toString();
+                passwordIntent = password_text.getText().toString();
+                Intent intent = new Intent(LoginActivity.this, MailActivity.class);
+                intent.putExtra("email", emailIntent);
+                intent.putExtra("password", passwordIntent);
+                intent.putExtra("mail", "gmail");
+                startActivity(intent);
+            }
+        });
+
+
     }
 }

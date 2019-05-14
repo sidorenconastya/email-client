@@ -1,14 +1,20 @@
 package com.example.emailclient;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class EmailMessage {
     public String sender;
     public String subject;
     public String body;
+    public Date date;
 
-    public EmailMessage(String sender, String subject, String body){
+    public EmailMessage(String sender, String subject, String body, Date date){
         this.sender = sender;
         this.subject = subject;
         this.body = body;
+        this.date = date;
     }
 
     public String printEmail(){
@@ -39,5 +45,17 @@ public class EmailMessage {
 
     public void setBody(String body) {
         this.body = body;
+    }
+
+    public String getDate() {
+        //String dateNew = date;
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+        //Date dateNew = date;
+        String  dateNew = simpleDateFormat.format(date);
+        return dateNew;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 }

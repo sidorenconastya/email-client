@@ -28,6 +28,7 @@ public class NewMailActivity extends AppCompatActivity {
     public EditText subjectText;
     public String email;
     public String password;
+    public String mail;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +43,8 @@ public class NewMailActivity extends AppCompatActivity {
         Intent intent = getIntent();
         email = getIntent().getExtras().getString("email");
         password = intent.getStringExtra("password");
+        mail = intent.getStringExtra("mail");
 
-
-
-        //System.out.println("To:"+to);
 
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,21 +53,30 @@ public class NewMailActivity extends AppCompatActivity {
                 final String message = messageText.getText().toString();
                 final String subject = subjectText.getText().toString();
                 AsyncEmail asyncEmail = new AsyncEmail();
-                asyncEmail.execute(email, password, to, message, subject);
+                asyncEmail.execute(mail, email, password, to, message, subject);
             }
         });
 
     }
 
-    public void sendEmail(final String email, final String password, String to, String message, String subject) throws MessagingException {
+    public void sendEmail(final String mail, final String email, final String password, String to, String message, String subject) throws MessagingException {
 
         Properties properties = System.getProperties();
-        properties.put("mail.smtp.starttls.enable", "true");
-        properties.put("mail.smtp.host", "smtp.mail.ru");
-        properties.put("mail.smtp.user", email);
-        properties.put("mail.smtp.password", password);
-        properties.put("mail.smtp.port", "587");
-        properties.put("mail.smtp.auth", "true");
+        if (mail.equals("mail")) {
+            properties.put("mail.smtp.starttls.enable", "true");
+            properties.put("mail.smtp.host", "smtp.mail.ru");
+            properties.put("mail.smtp.user", email);
+            properties.put("mail.smtp.password", password);
+            properties.put("mail.smtp.port", "587");
+            properties.put("mail.smtp.auth", "true");
+        } else if (mail.equals("gmail")){
+            properties.put("mail.smtp.starttls.enable", "true");
+            properties.put("mail.smtp.host", "smtp.gmail.com");
+            properties.put("mail.smtp.user", email);
+            properties.put("mail.smtp.password", password);
+            properties.put("mail.smtp.port", "587");
+            properties.put("mail.smtp.auth", "true");
+        }
 
         Session session = Session.getInstance(properties,
                 new Authenticator() {
@@ -86,7 +94,11 @@ public class NewMailActivity extends AppCompatActivity {
         mimeMessage.setText(message);
 
         Transport transport = session.getTransport("smtp");
-        transport.connect("smtp.mail.ru", email, password);
+        if (mail.equals("mail")) {
+            transport.connect("smtp.mail.ru", email, password);
+        } else if (mail.equals("gmail")){
+            transport.connect("smtp.gmail.com", email, password);
+        }
         transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
         transport.close();
 
@@ -98,7 +110,7 @@ public class NewMailActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... params) {
             try {
-                sendEmail(params[0], params[1], params[2], params[3], params[4]);
+                sendEmail(params[0], params[1], params[2], params[3], params[4], params[5]);
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
@@ -116,6 +128,7 @@ public class NewMailActivity extends AppCompatActivity {
             Intent intent = new Intent(NewMailActivity.this, MailActivity.class);
             intent.putExtra("email", email);
             intent.putExtra("password", password);
+            intent.putExtra("mail", mail);
             startActivity(intent);
         }
     }

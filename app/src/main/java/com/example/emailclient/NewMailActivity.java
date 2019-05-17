@@ -9,6 +9,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.emailclient.receiveEmailStrategies.IReceiveEmailStrategy;
+import com.example.emailclient.receiveEmailStrategies.ImapStrategy;
+import com.example.emailclient.receiveEmailStrategies.PopStrategy;
+import com.example.emailclient.sendEmailStrategies.ISendEmailStrategy;
+
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -29,6 +34,7 @@ public class NewMailActivity extends AppCompatActivity {
     public String email;
     public String password;
     public String mail;
+    private ISendEmailStrategy emailStrategy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +50,8 @@ public class NewMailActivity extends AppCompatActivity {
         email = getIntent().getExtras().getString("email");
         password = intent.getStringExtra("password");
         mail = intent.getStringExtra("mail");
+        emailStrategy = (ISendEmailStrategy) intent.getSerializableExtra("strategy");
+
 
 
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -53,56 +61,10 @@ public class NewMailActivity extends AppCompatActivity {
                 final String message = messageText.getText().toString();
                 final String subject = subjectText.getText().toString();
                 AsyncEmail asyncEmail = new AsyncEmail();
-                asyncEmail.execute(mail, email, password, to, message, subject);
+                asyncEmail.execute(email, password, to, message, subject, mail);
             }
         });
 
-    }
-
-    public void sendEmail(final String mail, final String email, final String password, String to, String message, String subject) throws MessagingException {
-
-        Properties properties = System.getProperties();
-        if (mail.equals("mail")) {
-            properties.put("mail.smtp.starttls.enable", "true");
-            properties.put("mail.smtp.host", "smtp.mail.ru");
-            properties.put("mail.smtp.user", email);
-            properties.put("mail.smtp.password", password);
-            properties.put("mail.smtp.port", "587");
-            properties.put("mail.smtp.auth", "true");
-        } else if (mail.equals("gmail")){
-            properties.put("mail.smtp.starttls.enable", "true");
-            properties.put("mail.smtp.host", "smtp.gmail.com");
-            properties.put("mail.smtp.user", email);
-            properties.put("mail.smtp.password", password);
-            properties.put("mail.smtp.port", "587");
-            properties.put("mail.smtp.auth", "true");
-        }
-
-        Session session = Session.getInstance(properties,
-                new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(email, password);
-                    }
-                });
-        session.setDebug(true);
-
-        MimeMessage mimeMessage = new MimeMessage(session);
-        mimeMessage.setFrom(new InternetAddress(email));
-        mimeMessage.addRecipient(Message.RecipientType.TO,
-                new InternetAddress(to));
-        mimeMessage.setSubject(subject);
-        mimeMessage.setText(message);
-
-        Transport transport = session.getTransport("smtp");
-        if (mail.equals("mail")) {
-            transport.connect("smtp.mail.ru", email, password);
-        } else if (mail.equals("gmail")){
-            transport.connect("smtp.gmail.com", email, password);
-        }
-        transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
-        transport.close();
-
-        System.out.println("Sent message successfully....");
     }
 
     public class AsyncEmail extends AsyncTask<String, Void, Void> {
@@ -110,7 +72,7 @@ public class NewMailActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(String... params) {
             try {
-                sendEmail(params[0], params[1], params[2], params[3], params[4], params[5]);
+                emailStrategy.sendEmail(params[0], params[1], params[2], params[3], params[4]);
             } catch (MessagingException e) {
                 e.printStackTrace();
             }
@@ -129,6 +91,9 @@ public class NewMailActivity extends AppCompatActivity {
             intent.putExtra("email", email);
             intent.putExtra("password", password);
             intent.putExtra("mail", mail);
+            if (mail.equals("mail")){
+                intent.putExtra("strategy", new PopStrategy());}
+            else if (mail.equals("gmail")){intent.putExtra("strategy", new ImapStrategy());}
             startActivity(intent);
         }
     }

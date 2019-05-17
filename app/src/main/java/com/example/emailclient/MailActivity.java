@@ -1,39 +1,35 @@
 package com.example.emailclient;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.sun.mail.imap.IMAPFolder;
+import com.example.emailclient.receiveEmailStrategies.IReceiveEmailStrategy;
+import com.example.emailclient.sendEmailStrategies.GmailStrategy;
+import com.example.emailclient.sendEmailStrategies.MailStrategy;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
-import javax.mail.Authenticator;
+import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Store;
 
 public class MailActivity extends Activity {
 
-//    public TextView subjectText;
-//    public TextView fromText;
-//    public TextView bodyText;
     public LinearLayout emailLayout;
     public Button newEmailButton;
+    private Activity activity = this;
+    public Button refreshButton;
+    public ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,18 +38,22 @@ public class MailActivity extends Activity {
 
         emailLayout = (LinearLayout) findViewById(R.id.emailLayout);
         newEmailButton = (Button) findViewById(R.id.newEmailButton);
+        refreshButton = (Button) findViewById(R.id.refreshButton);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
-        //Message[] messages;
-        //String email;
+        //progressBar.setVisibility(ProgressBar.VISIBLE);
+
         Intent intent = getIntent();
         final String email = getIntent().getExtras().getString("email");
         final String password = intent.getStringExtra("password");
         final String mail = intent.getStringExtra("mail");
 
+        emailStrategy = (IReceiveEmailStrategy) intent.getSerializableExtra("strategy");
+
         AsyncRequest asyncRequest = new AsyncRequest();
         asyncRequest.execute(email, password, mail);
 
-        newEmailButton.setOnClickListener(new View.OnClickListener(){
+        newEmailButton.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -61,99 +61,40 @@ public class MailActivity extends Activity {
                 intent.putExtra("email", email);
                 intent.putExtra("password", password);
                 intent.putExtra("mail", mail);
+                if (mail.equals("mail")){
+                intent.putExtra("strategy", new MailStrategy());}
+                else if (mail.equals("gmail")){intent.putExtra("strategy", new GmailStrategy());}
                 startActivity(intent);
             }
         });
 
+        refreshButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                emailLayout.removeAllViews();
+                AsyncRequest asyncRequest = new AsyncRequest();
+                asyncRequest.execute(email, password, mail);
+            }
+        });
+        //progressBar.setVisibility(ProgressBar.INVISIBLE);
     }
 
-    public ArrayList<EmailMessage> receiveEmailPop(final String email, final String password) throws MessagingException, IOException {
+    private IReceiveEmailStrategy emailStrategy;
 
-        Properties properties = new Properties();
-            properties.put("mail.store.protocol", "pop3s");
-            properties.put("mail.pop3s.host", "pop.mail.ru");
-            properties.put("mail.pop3s.user", email);
-            properties.put("mail.pop3s.ssl.enable", "true");
-            properties.put("mail.pop3s.ssl.trust", "pop.mail.ru");
-            properties.put("mail.pop3s.port", "995");
 
-        Session session = Session.getInstance(properties,
-                new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(email, password);
-                    }
-                });
-        session.setDebug(true);
-        Store store = session.getStore("pop3s");
-        store.connect("pop.mail.ru", email, password);
+    public class AsyncRequest extends AsyncTask<String, Void, ArrayList<EmailMessage>> {
 
-        Folder inbox = store.getFolder("INBOX");
-        inbox.open(Folder.READ_ONLY);
-
-        Message[] messages;
-        messages = inbox.getMessages();
-
-        int messagesCount = inbox.getMessageCount();
-
-        ArrayList<EmailMessage> result = new ArrayList<>();
-
-        for (int i = 0; i < messagesCount; i++){
-            Message message = messages[i];
-            result.add(new EmailMessage((message.getFrom()[0]).toString(), message.getSubject(), (message.getContent()).toString(), (message.getSentDate())));
+        @Override
+        protected void onPreExecute(){
+            //super.onPreExecute();
+            progressBar.setVisibility(ProgressBar.VISIBLE);
         }
 
-        return result;
-    }
-
-    public ArrayList<EmailMessage> receiveEmailImap(final String email, final String password) throws MessagingException, IOException {
-
-        Properties properties = new Properties();
-        properties.put("mail.store.protocol", "imaps");
-        properties.put("mail.imaps.host", "imap.gmail.com");
-        properties.put("mail.imaps.user", email);
-        properties.put("mail.imaps.ssl.enable", "true");
-        properties.put("mail.imaps.ssl.trust", "imap.gmail.com");
-        properties.put("mail.imaps.port", "993");
-
-        Session session = Session.getInstance(properties,
-                new Authenticator() {
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(email, password);
-                    }
-                });
-        session.setDebug(true);
-        Store store = session.getStore("imaps");
-        store.connect("imap.gmail.com", email, password);
-
-        IMAPFolder inbox = (IMAPFolder) store.getFolder("INBOX");
-        inbox.open(Folder.READ_ONLY);
-
-        Message[] messages;
-        messages = inbox.getMessages();
-
-        int messagesCount = inbox.getMessageCount();
-
-        ArrayList<EmailMessage> result = new ArrayList<>();
-
-        for (int i = 0; i < messagesCount; i++){
-            Message message = messages[i];
-            result.add(new EmailMessage((message.getFrom()[0]).toString(), message.getSubject(), (message.getContent()).toString(), message.getSentDate()));
-        }
-
-        return result;
-    }
-
-    public class AsyncRequest extends AsyncTask<String, Void, ArrayList<EmailMessage>>{
         @Override
         protected ArrayList<EmailMessage> doInBackground(String... params) {
-            ArrayList<EmailMessage> message = new ArrayList<>();
             try {
-                if (params[2].equals("mail")){
-                    message = receiveEmailPop(params[0], params[1]);}
-                else if (params[2].equals("gmail")){
-                    message = receiveEmailImap(params[0], params[1]);
-                }
-                return message;
+                return emailStrategy.receiveEmail(params[0], params[1]);
             } catch (MessagingException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -161,28 +102,68 @@ public class MailActivity extends Activity {
             }
             return null;
         }
+
         @Override
-        protected void onPostExecute(final ArrayList<EmailMessage> message){
-            int viewCount = message.size();
-            TextView[] textViews = new TextView[viewCount];
-            Context context = getApplicationContext();
+        protected void onPostExecute(final ArrayList<EmailMessage> messages) {
+            int viewCount = messages.size();
+//            TextView[] textViews = new TextView[viewCount];
+
+            progressBar.setVisibility(ProgressBar.INVISIBLE);
+
+//            for (final EmailMessage message : messages) {
+//                TextView tmp = new TextView(activity);
+//                Button del = new Button(activity);
+//
+//                tmp.setOnClickListener(new ClickMailCommand(activity, message));
+//                del.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        Message[] messages1 = emailStrategy.getMessages1();
+//
+//
+//                    }
+//                });
+//
+//                tmp.setText(message.printEmail());
+//                emailLayout.addView(tmp);
+//                emailLayout.addView(del);
+//            }
+
             for (int i = 0; i < viewCount; i++){
-                TextView tmp = new TextView(context);
+                TextView tmp = new TextView(activity);
+                Button del = new Button(activity);
+
                 final int finalI = i;
-                tmp.setOnClickListener(new View.OnClickListener() {
+                tmp.setOnClickListener(new ClickMailCommand(activity, messages.get(i)));
+
+                del.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                            Intent intent = new Intent(MailActivity.this, MessageActivity.class);
-                            intent.putExtra("sender", message.get(finalI).getSender());
-                            intent.putExtra("subject", message.get(finalI).getSubject());
-                            intent.putExtra("body", message.get(finalI).getBody());
-                            intent.putExtra("date", message.get(finalI).getDate());
-                            startActivity(intent);
+                        final Message[] messages1 = emailStrategy.getMessages1();
+                        final Folder folder = emailStrategy.getFolder();
+                        Thread thread = new Thread(){
+                               public void run(){
+                                   try {
+                                       messages1[finalI].setFlag(Flags.Flag.DELETED, true);
+                                       folder.close(true);
+                                   } catch (MessagingException e) {
+                                       e.printStackTrace();
+                                   }
+
+                               }
+                        };
+                        thread.start();
+
+                        Toast toast = Toast.makeText(getApplicationContext(),
+                                "Message was deleted. Please refresh the page.", Toast.LENGTH_SHORT);
+                        toast.show();
                     }
                 });
-                tmp.setText(message.get(i).printEmail());
+
+                tmp.setText(messages.get(i).printEmail());
                 emailLayout.addView(tmp);
-                textViews[i] = tmp;
+                emailLayout.addView(del);
+//                textViews[i] = tmp;
             }
 
         }

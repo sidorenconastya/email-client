@@ -2,11 +2,13 @@ package com.example.emailclient;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+
+import com.example.emailclient.receiveEmailStrategies.ImapStrategy;
+import com.example.emailclient.receiveEmailStrategies.PopStrategy;
 
 public class LoginActivity extends Activity {
 
@@ -17,15 +19,6 @@ public class LoginActivity extends Activity {
     public String passwordIntent;
     public Button gmailButton;
 
-    /*public String getEmail(){
-        return this.email;
-    }
-
-    public String getPassword(){
-        return this.password;
-    }*/
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +26,6 @@ public class LoginActivity extends Activity {
         password_text = (EditText) findViewById(R.id.passwordText);
         email_text = (EditText) findViewById(R.id.emailText);
 
-       // System.out.println("EmailLogin"+emailIntent);
         login_button = findViewById(R.id.loginButton);
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,6 +36,8 @@ public class LoginActivity extends Activity {
                 intent.putExtra("email", emailIntent);
                 intent.putExtra("password", passwordIntent);
                 intent.putExtra("mail", "mail");
+
+                intent.putExtra("strategy", new PopStrategy());
                 startActivity(intent);
             }
         });
@@ -57,6 +51,9 @@ public class LoginActivity extends Activity {
                 intent.putExtra("email", emailIntent);
                 intent.putExtra("password", passwordIntent);
                 intent.putExtra("mail", "gmail");
+
+                intent.putExtra("strategy", new ImapStrategy());
+
                 startActivity(intent);
             }
         });

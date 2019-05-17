@@ -4,11 +4,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class EmailMessage {
-    public String sender;
-    public String subject;
-    public String body;
+import javax.mail.Message;
+
+public class EmailMessage{
+    private String sender;
+    private String subject;
+    private String body;
     public Date date;
+
+    EmailMessage() {}
 
     public EmailMessage(String sender, String subject, String body, Date date){
         this.sender = sender;

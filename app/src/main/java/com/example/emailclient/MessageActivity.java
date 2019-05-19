@@ -27,6 +27,7 @@ public class MessageActivity extends AppCompatActivity {
         String subject = intent.getExtras().getString("subject");
         String body = intent.getExtras().getString("body");
         String date = intent.getExtras().getString("date");
+        //String body = intent.getExtras().getString("content");
 
         fromTextView.setText(from);
         subjectTextView.setText(subject);

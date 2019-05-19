@@ -43,6 +43,18 @@
             android:lines="5"/>
 
         <Button
+            android:id="@+id/attachmentButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Attach a file" />
+
+        <TextView
+            android:id="@+id/attachmenText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="You did not choose any file." />
+
+        <Button
             android:id="@+id/sendButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

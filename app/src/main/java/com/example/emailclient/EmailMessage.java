@@ -1,16 +1,38 @@
 package com.example.emailclient;
 
-import java.text.ParseException;
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
 
 public class EmailMessage{
     private String sender;
     private String subject;
     private String body;
     public Date date;
+    public String content;
+    public boolean seenFlag;
+    public boolean attachmentFlag;
+    public File attachment;
+
+    public boolean isAttachmentFlag() {
+        return attachmentFlag;
+    }
+
+    public void setAttachmentFlag(boolean attachmentFlag) {
+        this.attachmentFlag = attachmentFlag;
+    }
+
+    public boolean isSeenFlag() {
+        return seenFlag;
+    }
+
+    public void setSeenFlag(boolean seenFlag) {
+        this.seenFlag = seenFlag;
+    }
 
     EmailMessage() {}
 
@@ -62,4 +84,21 @@ public class EmailMessage{
     public void setDate(Date date) {
         this.date = date;
     }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(Message message) throws IOException, MessagingException {
+        this.content = message.getContent().toString();
+    }
+
+    public File getAttachment(){
+        return attachment;
+    }
+
+    public void setAttachment(File file){
+        this.attachment = file;
+    }
+
 }

@@ -6,5 +6,5 @@ import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
 public interface ISendEmailStrategy extends Serializable {
-    void sendEmail(String email, String password, String to, String body, String subject) throws MessagingException;
+    void sendEmail(String email, String password, String to, String body, String subject, String mail, String filepath) throws MessagingException;
 }

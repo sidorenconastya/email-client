@@ -42,7 +42,7 @@ public class PopStrategy implements IReceiveEmailStrategy {
     }
 
     @Override
-    public ArrayList<EmailMessage> receiveEmail(final String email, final String password) throws MessagingException, IOException {
+    public ArrayList<EmailMessage> receiveEmail(final String email, final String password, final String mail, String folderName) throws MessagingException, IOException {
         Properties properties = new Properties();
         properties.put("mail.store.protocol", "pop3s");
         properties.put("mail.pop3s.host", "pop.mail.ru");

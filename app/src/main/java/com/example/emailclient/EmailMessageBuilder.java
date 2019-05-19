@@ -30,6 +30,18 @@ public class EmailMessageBuilder {
         return this;
     }
 
+    public EmailMessageBuilder withFlag(boolean flag) {
+        emailMessage.setSeenFlag(flag);
+
+        return this;
+    }
+
+    public EmailMessageBuilder withAttachment(boolean hasAttachment){
+        emailMessage.setAttachmentFlag(hasAttachment);
+
+        return this;
+    }
+
     void reset() {
         emailMessage = new EmailMessage();
     }

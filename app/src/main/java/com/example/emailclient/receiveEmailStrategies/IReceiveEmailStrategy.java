@@ -12,7 +12,7 @@ import javax.mail.MessagingException;
 
 public interface IReceiveEmailStrategy extends Serializable {
 
-    ArrayList<EmailMessage> receiveEmail(String email, String password) throws MessagingException, IOException;
+    ArrayList<EmailMessage> receiveEmail(String email, String password, String mail, String folderName) throws MessagingException, IOException;
 
     void setMessages1(Message[] messages1);
 

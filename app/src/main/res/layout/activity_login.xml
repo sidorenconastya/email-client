@@ -42,14 +42,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Sign In Mail.Ru" />
+                android:text="Sign In Mail" />
 
             <Button
                 android:id="@+id/gmailButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Sign In Gmail.Com" />
+                android:text="Sign In Gmail" />
         </LinearLayout>
 
     </LinearLayout>

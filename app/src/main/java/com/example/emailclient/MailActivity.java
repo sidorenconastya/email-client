@@ -129,9 +129,9 @@ public class MailActivity extends Activity {
         ConfigureFactory configureFactory = new ConfigureFactory();
         ButtonFactory buttonFactory;
         buttonFactory = configureFactory.cofigureButtons(activity);
-        buttonFactory.createButton().paint("Refresh", refreshButton);
-        buttonFactory.createButton().paint("New", newEmailButton);
-        buttonFactory.createButton().paint("Folders", foldersButton);
+        buttonFactory.createButton().paint(activity, "Refresh", refreshButton);
+        buttonFactory.createButton().paint(activity, "New", newEmailButton);
+        buttonFactory.createButton().paint(activity, "Folders", foldersButton);
 
     }
 
@@ -214,7 +214,7 @@ public class MailActivity extends Activity {
                 ConfigureFactory configureFactory = new ConfigureFactory();
                 ButtonFactory buttonFactory;
                 buttonFactory = configureFactory.cofigureButtons(activity);
-                buttonFactory.createButton().paint("X", del);
+                buttonFactory.createButton().paint(activity, "X", del);
 
                 int dpValueW = 100; // margin in dips
                 float dW = activity.getApplicationContext().getResources().getDisplayMetrics().density;
@@ -248,10 +248,9 @@ public class MailActivity extends Activity {
                 lp1.gravity = Gravity.CENTER_VERTICAL;
                 del.setLayoutParams(lp1);
 
-
-
                 LinearLayout.LayoutParams lp = (LinearLayout.LayoutParams) ll.getLayoutParams();
-                lp.setMargins(margin, margin, margin, margin);
+                //lp.setMargins(margin, margin, margin, margin);
+                ll.setPadding(margin, margin, margin, margin);
 //                textViews[i] = tmp;
             }
 

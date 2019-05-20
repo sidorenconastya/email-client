@@ -21,7 +21,9 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Enter your e-mail"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"/>
         <!--android:text="Name" />-->
 
         <EditText
@@ -30,26 +32,31 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Enter your pasword"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="8dp">
 
             <Button
                 android:id="@+id/loginButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Sign In Mail" />
+                android:text="Sign In Mail"
+                android:layout_marginRight="4dp"/>
 
             <Button
                 android:id="@+id/gmailButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Sign In Gmail" />
+                android:text="Sign In Gmail"
+                android:layout_marginLeft="4dp"/>
         </LinearLayout>
 
     </LinearLayout>

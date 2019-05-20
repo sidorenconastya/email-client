@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.emailclient.buttonAbstractFactory.BlueFactory;
@@ -58,8 +59,8 @@ public class NewMailActivity extends AppCompatActivity {
         ConfigureFactory configureFactory = new ConfigureFactory();
         ButtonFactory buttonFactory;
         buttonFactory = configureFactory.cofigureButtons(activity);
-        buttonFactory.createButton().paint("Send", sendButton);
-        buttonFactory.createButton().paint("Attach a file", attachmentButton);
+        buttonFactory.createButton().paint(activity, "Send", sendButton);
+        buttonFactory.createButton().paint(activity, "Attach a file", attachmentButton);
 
         attachmentButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +137,7 @@ public class NewMailActivity extends AppCompatActivity {
             ToastFactory toastFactory = new ToastFactory();
             IToast toast = toastFactory.getToast("send");
             toast.createToast(activity);
+
             Intent intent = new Intent(NewMailActivity.this, MailActivity.class);
             intent.putExtra("email", email);
             intent.putExtra("password", password);

@@ -46,6 +46,7 @@ public class GmailStrategy implements ISendEmailStrategy {
         //mimeMessage.setText(to);
 
         BodyPart messageBodyPart = new MimeBodyPart();
+        if (filepath != null){
         messageBodyPart.setText(body);
         Multipart multipart = new MimeMultipart();
 
@@ -64,7 +65,8 @@ public class GmailStrategy implements ISendEmailStrategy {
         mc.addMailcap("multipart/*;; x-java-content-handler=com.sun.mail.handlers.multipart_mixed");
         mc.addMailcap("message/rfc822;; x-java-content- handler=com.sun.mail.handlers.message_rfc822");
 
-        mimeMessage.setContent(multipart);
+        mimeMessage.setContent(multipart);}
+        else {mimeMessage.setText(body);}
 
         Transport transport = session.getTransport("smtp");
         transport.connect("smtp.gmail.com", email, password);

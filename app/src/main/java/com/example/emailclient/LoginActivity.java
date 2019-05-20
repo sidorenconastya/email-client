@@ -93,8 +93,8 @@ public class LoginActivity extends Activity {
         ConfigureFactory configureFactory = new ConfigureFactory();
         ButtonFactory buttonFactory;
         buttonFactory = configureFactory.cofigureButtons(activity);
-        buttonFactory.createButton().paint("Sign in mail", login_button);
-        buttonFactory.createButton().paint("Sign in gmail", gmailButton);
+        buttonFactory.createButton().paint(activity, "Sign in mail", login_button);
+        buttonFactory.createButton().paint(activity, "Sign in gmail", gmailButton);
 
 
     }

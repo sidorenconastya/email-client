@@ -152,7 +152,7 @@ public class FoldersActivity extends AppCompatActivity {
                         Intent intent = new Intent(FoldersActivity.this, MailActivity.class);
                         intent.putExtra("email", email);
                         intent.putExtra("password", password);
-                        intent.putExtra("mail", "mail");
+                        intent.putExtra("mail", mail);
                         intent.putExtra("folder", s[finalI]);
                         intent.putExtra("strategy", new ImapStrategy());
                         startActivity(intent);
